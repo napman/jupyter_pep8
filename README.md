@@ -4,9 +4,7 @@ Jupyter PEP8
 ## Install
 
 ```
-$ git clone https://github.com/napman/jupyter_pep8.git
-$ cd jupyter_pep8
-$ pip install .
+$ pip install jupyter_pep8
 ```
 
 ## Usage
