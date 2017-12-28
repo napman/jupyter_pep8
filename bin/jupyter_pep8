@@ -6,7 +6,7 @@ import nbformat
 import autopep8
 from glob import glob
 META_NEWLINE = '\n# meta_pep8\n'
-PEP_IGNORE_OPTIONS = [] # ['E1', 'E301', 'E302', 'W']
+PEP_IGNORE_OPTIONS = ['W', 'W292', 'E301', 'E302'] # ['E1', , 'W']
 
 @click.command()
 @click.argument('path')
@@ -24,6 +24,7 @@ def apply_pep8(path, overwrite, version):
             for cell in notebook['cells']:
                 if cell['cell_type'] == 'code':
                     cell['source'] = autopep8.fix_code(cell['source'], options={'ignore': PEP_IGNORE_OPTIONS})
+                    cell['source'] = cell['source'].rstrip('\n') # for notebook cells, it's not necessary 
                     
             # write
             with open(newfilename, 'w') as fp:
