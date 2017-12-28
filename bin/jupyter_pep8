@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import click
+import nbformat
+import autopep8
+from glob import glob
+META_NEWLINE = '\n# meta_pep8\n'
+PEP_IGNORE_OPTIONS = [] # ['E1', 'E301', 'E302', 'W']
+
+@click.command()
+@click.argument('path')
+@click.option('--overwrite/--no-overwrite', default=False)
+@click.option('--version', default=4, type=int)
+def apply_pep8(path, overwrite, version):
+    for filename in glob(path):
+        try:
+            newfilename = filename if overwrite else filename + ".pep8.ipynb"
+            print("processing", filename, ">>", newfilename)
+    
+            # trim
+            with open(filename) as fp:
+                notebook = nbformat.read(fp, as_version=version)
+            for cell in notebook['cells']:
+                if cell['cell_type'] == 'code':
+                    cell['source'] = autopep8.fix_code(cell['source'], options={'ignore': PEP_IGNORE_OPTIONS})
+                    
+            # write
+            with open(newfilename, 'w') as fp:
+                nbformat.write(notebook, fp, version=version)
+        except Exception as e:
+            print('Error: {}'.format(e))
+
+    print("done")
+
+if __name__ == '__main__':
+    apply_pep8()
